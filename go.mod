@@ -1,1 +1,1 @@
-module calendar
+module github.com/lpar/calendar
