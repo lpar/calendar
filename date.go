@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const dateFormat = "2006-01-02"
+
 // Date represents a date with no time or timezone information.
 // It is compatible with PostgreSQL database DATE values when using the de facto standard lib/pq driver.
 type Date time.Time
@@ -28,7 +30,7 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t, err := time.Parse("2006-01-02", sd)
+	t, err := time.Parse(dateFormat, sd)
 	*d = Date(t)
 	return err
 }
@@ -37,7 +39,7 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 // in RFC 3339 full-date format -- that is, yyyy-mm-dd.
 func (d *Date) MarshalJSON() ([]byte, error) {
 	t := time.Time(*d)
-	ds := "\"" + t.Format("2006-01-02") + "\""
+	ds := "\"" + t.Format(dateFormat) + "\""
 	return []byte(ds), nil
 }
 
@@ -45,7 +47,7 @@ func (d *Date) MarshalJSON() ([]byte, error) {
 
 // String returns the value of the Date in ISO-8601 / RFC 3339 format yyyy-mm-dd.
 func (d *Date) String() string {
-	return time.Time(*d).Format("2006-01-02")
+	return time.Time(*d).Format(dateFormat)
 }
 
 // Implement Valuer

@@ -10,20 +10,24 @@ func checkNullTimeValid(t *testing.T, h, m, s int) {
 	sti := ti.String()
 	xsti := fmt.Sprintf("%02d:%02d:%02d", h,m,s)
 	if sti != xsti {
-		t.Errorf("Time.String() failed, expected %s, got %s", xsti, sti)
+		t.Errorf("NullTime.String() failed, expected %s, got %s", xsti, sti)
 	}
 	json, err := ti.MarshalJSON()
 	if err != nil {
-		t.Errorf("Time.MarshalJSON() failed to serialize %s", sti)
+		t.Errorf("NullTime.MarshalJSON() failed to serialize %s", sti)
 	}
 	sjson := string(json)
 	if len(sjson) != 10 {
-		t.Errorf("Time.MarshalJSON() serialized %s to %s", sti, sjson)
+		t.Errorf("NullTime.MarshalJSON() serialized %s to %s", sti, sjson)
+	}
+	correctJson := `"` + xsti + `"`
+	if sjson != correctJson {
+		t.Errorf("NullTime.MarshalJSON() serialized %s to %s, expected %s", sti, sjson, correctJson)
 	}
 	uti := NullTime{}
 	err = uti.UnmarshalJSON(json)
 	if err != nil {
-		t.Errorf("Time.UnmarshalJSON() failed to deserialize %s", sjson)
+		t.Errorf("NullTime.UnmarshalJSON() failed to deserialize %s", sjson)
 	}
 	if !uti.Equal(ti) {
 		t.Errorf("Times unequal after JSON round trip: %s <=> %s", ti.String(), uti.String())
@@ -59,7 +63,8 @@ func TestNullTime(t *testing.T) {
 	for h := 0; h < 24; h++ {
 		for m := 0; m < 60; m++ {
 			for s := 0; s < 60; s++ {
-				checkTimeValid(t, h,m,s)
+				checkNullTimeValid(t, h,m,s)
+				checkNullTimeNull(t, h,m,s)
 			}
 		}
 	}

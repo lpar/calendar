@@ -36,7 +36,7 @@ func (d *NullDate) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t, err := time.Parse("2006-01-02", sd)
+	t, err := time.Parse(dateFormat, sd)
 	*d = NullDate{
 		Date: Date(t),
 		Valid: true,
@@ -50,7 +50,7 @@ func (d *NullDate) MarshalJSON() ([]byte, error) {
 	var ds string
 	if d.Valid {
 		t := time.Time(d.Date)
-		ds = "\"" + t.Format("2006-01-02") + "\""
+		ds = "\"" + t.Format(dateFormat) + "\""
 	} else {
 		ds = "null"
 	}

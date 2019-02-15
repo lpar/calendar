@@ -8,14 +8,14 @@ import (
 )
 
 type NullTime struct {
-	Time Time
+	Time  Time
 	Valid bool
 }
 
 // NewNullTime constructs a new NullTime object for the given hours, minutes and seconds
 func NewNullTime(h, m, s int) NullTime {
 	return NullTime{
-		Time: NewTime(h, m, s),
+		Time:  NewTime(h, m, s),
 		Valid: true,
 	}
 }
@@ -36,9 +36,9 @@ func (t *NullTime) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	ti, err := time.Parse("15-04-05", st)
+	ti, err := time.Parse(timeFormat, st)
 	*t = NullTime{
-		Time: Time(ti),
+		Time:  Time(ti),
 		Valid: true,
 	}
 	return err
@@ -50,7 +50,7 @@ func (t *NullTime) MarshalJSON() ([]byte, error) {
 	var ds string
 	if t.Valid {
 		ti := time.Time(t.Time)
-		ds = "\"" + ti.Format("15:04:05") + "\""
+		ds = "\"" + ti.Format(timeFormat) + "\""
 	} else {
 		ds = "null"
 	}

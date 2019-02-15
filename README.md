@@ -13,7 +13,7 @@ I wrote this because I needed:
  
 So I can define a structure with (say):
 
-```go
+```
 StartDate         calendar.Date     `json:"start_date"`
 StartTime         calendar.NullTime `json:"start_time"`
 EndDate           calendar.Date     `json:"end_date"`

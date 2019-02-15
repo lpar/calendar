@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const timeFormat = "15:04:05"
+
 // Time represents a time with no date or timezone information.
 // It is compatible with PostgreSQL database TIME values when using the de facto standard lib/pq driver.
 type Time time.Time
@@ -23,7 +25,7 @@ func (ti *Time) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t, err := time.Parse("15:04:05", sd)
+	t, err := time.Parse(timeFormat, sd)
 	*ti = Time(t)
 	return err
 }
@@ -32,7 +34,7 @@ func (ti *Time) UnmarshalJSON(b []byte) error {
 // in RFC 3339 format -- that is, hh:mm:ss in 24 hour clock
 func (ti *Time) MarshalJSON() ([]byte, error) {
 	t := time.Time(*ti)
-	ds := "\"" + t.Format("15:04:05") + "\""
+	ds := "\"" + t.Format(timeFormat) + "\""
 	return []byte(ds), nil
 }
 
@@ -40,7 +42,7 @@ func (ti *Time) MarshalJSON() ([]byte, error) {
 
 // String returns the value of the Time in hh:mm:ss format.
 func (ti *Time) String() string {
-	return time.Time(*ti).Format("15:04:05")
+	return time.Time(*ti).Format(timeFormat)
 }
 
 // Implement Valuer

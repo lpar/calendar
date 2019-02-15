@@ -3,7 +3,6 @@ package calendar
 import (
 	"fmt"
 	"testing"
-	"time"
 )
 
 func checkTimeValid(t *testing.T, h, m, s int) {
@@ -21,12 +20,16 @@ func checkTimeValid(t *testing.T, h, m, s int) {
 	if len(sjson) != 10 {
 		t.Errorf("Time.MarshalJSON() serialized %s to %s", sti, sjson)
 	}
+	correctJson := `"` + xsti + `"`
+	if sjson != correctJson {
+		t.Errorf("Time.MarshalJSON() serialized %s to %s, expected %s", sti, sjson, correctJson)
+	}
 	uti := Time{}
 	err = uti.UnmarshalJSON(json)
 	if err != nil {
 		t.Errorf("Time.UnmarshalJSON() failed to deserialize %s", sjson)
 	}
-	if time.Time(uti).Format("15:04:05") != time.Time(ti).Format("15:04:05") {
+	if !uti.Equal(ti) {
 		t.Errorf("Times unequal after JSON round trip: %s <=> %s", ti.String(), uti.String())
 	}
 }
