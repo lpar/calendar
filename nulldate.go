@@ -8,14 +8,14 @@ import (
 )
 
 type NullDate struct {
-	Date Date
+	Date  Date
 	Valid bool
 }
 
 // NewNullDate constructs a new NullDate object for the given year, month and day
 func NewNullDate(y, m, d int) NullDate {
 	return NullDate{
-		Date: NewDate(y, m, d),
+		Date:  NewDate(y, m, d),
 		Valid: true,
 	}
 }
@@ -38,7 +38,7 @@ func (d *NullDate) UnmarshalJSON(b []byte) error {
 	}
 	t, err := time.Parse(dateFormat, sd)
 	*d = NullDate{
-		Date: Date(t),
+		Date:  Date(t),
 		Valid: true,
 	}
 	return err
@@ -46,7 +46,7 @@ func (d *NullDate) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON marshals a NullDate into JSON format. The date is formatted
 // in RFC 3339 full-date format -- that is, yyyy-mm-dd.
-func (d *NullDate) MarshalJSON() ([]byte, error) {
+func (d NullDate) MarshalJSON() ([]byte, error) {
 	var ds string
 	if d.Valid {
 		t := time.Time(d.Date)
@@ -60,7 +60,7 @@ func (d *NullDate) MarshalJSON() ([]byte, error) {
 // Implement Stringer
 
 // String returns the value of the NullDate in ISO-8601 / RFC 3339 format yyyy-mm-dd.
-func (d *NullDate) String() string {
+func (d NullDate) String() string {
 	if d.Valid {
 		return d.Date.String()
 	}
@@ -70,7 +70,7 @@ func (d *NullDate) String() string {
 // Implement Valuer
 
 // Value implements the database/sql Valuer interface.
-func (d *NullDate) Value() (driver.Value, error) {
+func (d NullDate) Value() (driver.Value, error) {
 	if d.Valid {
 		return time.Time(d.Date), nil
 	}
@@ -95,7 +95,7 @@ func (d *NullDate) Scan(value interface{}) error {
 }
 
 // Equal returns true if the two dates are equal.
-func (d *NullDate) Equal(other NullDate) bool {
+func (d NullDate) Equal(other NullDate) bool {
 	if !d.Valid && !other.Valid {
 		return true // both null means equal
 	}
@@ -104,4 +104,3 @@ func (d *NullDate) Equal(other NullDate) bool {
 	}
 	return d.Date.Equal(other.Date)
 }
-
