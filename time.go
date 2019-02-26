@@ -32,8 +32,8 @@ func (ti *Time) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON marshals a Time into JSON format. The date is formatted
 // in RFC 3339 format -- that is, hh:mm:ss in 24 hour clock
-func (ti *Time) MarshalJSON() ([]byte, error) {
-	t := time.Time(*ti)
+func (ti Time) MarshalJSON() ([]byte, error) {
+	t := time.Time(ti)
 	ds := "\"" + t.Format(timeFormat) + "\""
 	return []byte(ds), nil
 }
@@ -41,15 +41,15 @@ func (ti *Time) MarshalJSON() ([]byte, error) {
 // Implement Stringer
 
 // String returns the value of the Time in hh:mm:ss format.
-func (ti *Time) String() string {
-	return time.Time(*ti).Format(timeFormat)
+func (ti Time) String() string {
+	return time.Time(ti).Format(timeFormat)
 }
 
 // Implement Valuer
 
 // Value implements the database/sql Valuer interface.
-func (ti *Time) Value() (driver.Value, error) {
-	return time.Time(*ti), nil
+func (ti Time) Value() (driver.Value, error) {
+	return time.Time(ti), nil
 }
 
 // Implement Scanner

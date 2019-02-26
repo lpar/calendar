@@ -37,8 +37,8 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON marshals a Date into JSON format. The date is formatted
 // in RFC 3339 full-date format -- that is, yyyy-mm-dd.
-func (d *Date) MarshalJSON() ([]byte, error) {
-	t := time.Time(*d)
+func (d Date) MarshalJSON() ([]byte, error) {
+	t := time.Time(d)
 	ds := "\"" + t.Format(dateFormat) + "\""
 	return []byte(ds), nil
 }
@@ -46,15 +46,15 @@ func (d *Date) MarshalJSON() ([]byte, error) {
 // Implement Stringer
 
 // String returns the value of the Date in ISO-8601 / RFC 3339 format yyyy-mm-dd.
-func (d *Date) String() string {
-	return time.Time(*d).Format(dateFormat)
+func (d Date) String() string {
+	return time.Time(d).Format(dateFormat)
 }
 
 // Implement Valuer
 
 // Value implements the database/sql Valuer interface.
-func (d *Date) Value() (driver.Value, error) {
-	return time.Time(*d), nil
+func (d Date) Value() (driver.Value, error) {
+	return time.Time(d), nil
 }
 
 // Implement Scanner
@@ -73,21 +73,21 @@ func (d *Date) Scan(value interface{}) error {
 }
 
 // Before returns true if the first date (the reciever) is before the second date (the argument).
-func (d *Date) Before(other Date) bool {
-	return time.Time(*d).Before(time.Time(other))
+func (d Date) Before(other Date) bool {
+	return time.Time(d).Before(time.Time(other))
 }
 
 // After returns true if the first date (the reciever) is after the second date (the argument).
-func (d *Date) After(other Date) bool {
-	return time.Time(*d).After(time.Time(other))
+func (d Date) After(other Date) bool {
+	return time.Time(d).After(time.Time(other))
 }
 
 // Equal returns true if the two dates are equal.
-func (d *Date) Equal(other Date) bool {
-	return time.Time(*d).Equal(time.Time(other))
+func (d Date) Equal(other Date) bool {
+	return time.Time(d).Equal(time.Time(other))
 }
 
 // AddDate adds the specified number of years, months and days to the Date, returning another Date.
-func (d *Date) AddDate(yy int, mm int, dd int) Date {
-	return Date(time.Time(*d).AddDate(yy, mm, dd))
+func (d Date) AddDate(yy int, mm int, dd int) Date {
+	return Date(time.Time(d).AddDate(yy, mm, dd))
 }

@@ -46,7 +46,7 @@ func (t *NullTime) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON marshals a NullTime into JSON format. The date is formatted
 // in RFC 3339 full-date format -- that is, yyyy-mm-dd.
-func (t *NullTime) MarshalJSON() ([]byte, error) {
+func (t NullTime) MarshalJSON() ([]byte, error) {
 	var ds string
 	if t.Valid {
 		ti := time.Time(t.Time)
@@ -60,7 +60,7 @@ func (t *NullTime) MarshalJSON() ([]byte, error) {
 // Implement Stringer
 
 // String returns the value of the NullTime in ISO-8601 / RFC 3339 format yyyy-mm-dd.
-func (t *NullTime) String() string {
+func (t NullTime) String() string {
 	if t.Valid {
 		return t.Time.String()
 	}
@@ -70,7 +70,7 @@ func (t *NullTime) String() string {
 // Implement Valuer
 
 // Value implements the database/sql Valuer interface.
-func (t *NullTime) Value() (driver.Value, error) {
+func (t NullTime) Value() (driver.Value, error) {
 	if t.Valid {
 		return time.Time(t.Time), nil
 	}
@@ -95,7 +95,7 @@ func (t *NullTime) Scan(value interface{}) error {
 }
 
 // Equal returns true if the two dates are equal.
-func (t *NullTime) Equal(other NullTime) bool {
+func (t NullTime) Equal(other NullTime) bool {
 	if !t.Valid && !other.Valid {
 		return true // both null means equal
 	}
