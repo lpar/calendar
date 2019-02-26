@@ -1,12 +1,13 @@
-package calendar
+package calendar_test
 
 import (
 	"fmt"
+	"github.com/lpar/calendar"
 	"testing"
 )
 
 func checkTimeValid(t *testing.T, h, m, s int) {
-	ti := NewTime(h, m, s)
+	ti := calendar.NewTime(h, m, s)
 	sti := ti.String()
 	xsti := fmt.Sprintf("%02d:%02d:%02d", h,m,s)
 	if sti != xsti {
@@ -24,7 +25,7 @@ func checkTimeValid(t *testing.T, h, m, s int) {
 	if sjson != correctJson {
 		t.Errorf("Time.MarshalJSON() serialized %s to %s, expected %s", sti, sjson, correctJson)
 	}
-	uti := Time{}
+	uti := calendar.Time{}
 	err = uti.UnmarshalJSON(json)
 	if err != nil {
 		t.Errorf("Time.UnmarshalJSON() failed to deserialize %s", sjson)
