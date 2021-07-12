@@ -21,7 +21,8 @@ func NewNullDate(y, m, d int) NullDate {
 }
 
 // NullDateFromTime constructs a new NullDate object from the provided time.Time value, throwing away all time and timezone information.
-func NullDateFromTime(t time.Time) NullDate {
+func NullDateFromTime(tNoLoc time.Time) NullDate {
+	t := tNoLoc.In(time.UTC)
 	return NewNullDate(t.Year(), int(t.Month()), t.Day())
 }
 
@@ -36,7 +37,7 @@ func (d *NullDate) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t, err := time.Parse(dateFormat, sd)
+	t, err := time.ParseInLocation(dateFormat, sd, time.UTC)
 	*d = NullDate{
 		Date:  Date(t),
 		Valid: true,
@@ -49,7 +50,7 @@ func (d *NullDate) UnmarshalJSON(b []byte) error {
 func (d NullDate) MarshalJSON() ([]byte, error) {
 	var ds string
 	if d.Valid {
-		t := time.Time(d.Date)
+		t := time.Time(d.Date).In(time.UTC)
 		ds = "\"" + t.Format(dateFormat) + "\""
 	} else {
 		ds = "null"
@@ -72,7 +73,7 @@ func (d NullDate) String() string {
 // Value implements the database/sql Valuer interface.
 func (d NullDate) Value() (driver.Value, error) {
 	if d.Valid {
-		return time.Time(d.Date), nil
+		return time.Time(d.Date).In(time.UTC), nil
 	}
 	return nil, nil
 }
@@ -87,7 +88,7 @@ func (d *NullDate) Scan(value interface{}) error {
 	}
 	t, ok := value.(time.Time)
 	if ok {
-		d.Date = DateFromTime(t)
+		d.Date = DateFromTime(t.In(time.UTC))
 		d.Valid = true
 		return nil
 	}

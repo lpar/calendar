@@ -25,7 +25,7 @@ func (ti *Time) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t, err := time.Parse(timeFormat, sd)
+	t, err := time.ParseInLocation(timeFormat, sd, time.UTC)
 	*ti = Time(t)
 	return err
 }
@@ -33,7 +33,7 @@ func (ti *Time) UnmarshalJSON(b []byte) error {
 // MarshalJSON marshals a Time into JSON format. The date is formatted
 // in RFC 3339 format -- that is, hh:mm:ss in 24 hour clock
 func (ti Time) MarshalJSON() ([]byte, error) {
-	t := time.Time(ti)
+	t := time.Time(ti).In(time.UTC)
 	ds := "\"" + t.Format(timeFormat) + "\""
 	return []byte(ds), nil
 }
@@ -42,14 +42,14 @@ func (ti Time) MarshalJSON() ([]byte, error) {
 
 // String returns the value of the Time in hh:mm:ss format.
 func (ti Time) String() string {
-	return time.Time(ti).Format(timeFormat)
+	return time.Time(ti).In(time.UTC).Format(timeFormat)
 }
 
 // Implement Valuer
 
 // Value implements the database/sql Valuer interface.
 func (ti Time) Value() (driver.Value, error) {
-	return time.Time(ti), nil
+	return time.Time(ti).In(time.UTC), nil
 }
 
 // Implement Scanner
@@ -61,7 +61,7 @@ func (ti *Time) Scan(value interface{}) error {
 	}
 	t, ok := value.(time.Time)
 	if ok {
-		*ti = Time(t)
+		*ti = Time(t.In(time.UTC))
 		return nil
 	}
 	return fmt.Errorf("unable to convert Time")
