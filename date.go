@@ -19,7 +19,8 @@ func NewDate(y, m, d int) Date {
 }
 
 // DateFromTime constructs a new Date object from the provided time.Time value, throwing away all time and timezone information.
-func DateFromTime(t time.Time) Date {
+func DateFromTime(tNoLoc time.Time) Date {
+	t := tNoLoc.In(time.UTC)
 	return NewDate(t.Year(), int(t.Month()), t.Day())
 }
 
@@ -30,7 +31,7 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	t, err := time.Parse(dateFormat, sd)
+	t, err := time.ParseInLocation(dateFormat, sd, time.UTC)
 	*d = Date(t)
 	return err
 }
@@ -38,7 +39,7 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 // MarshalJSON marshals a Date into JSON format. The date is formatted
 // in RFC 3339 full-date format -- that is, yyyy-mm-dd.
 func (d Date) MarshalJSON() ([]byte, error) {
-	t := time.Time(d)
+	t := time.Time(d).In(time.UTC)
 	ds := "\"" + t.Format(dateFormat) + "\""
 	return []byte(ds), nil
 }
@@ -47,14 +48,14 @@ func (d Date) MarshalJSON() ([]byte, error) {
 
 // String returns the value of the Date in ISO-8601 / RFC 3339 format yyyy-mm-dd.
 func (d Date) String() string {
-	return time.Time(d).Format(dateFormat)
+	return time.Time(d).In(time.UTC).Format(dateFormat)
 }
 
 // Implement Valuer
 
 // Value implements the database/sql Valuer interface.
 func (d Date) Value() (driver.Value, error) {
-	return time.Time(d), nil
+	return time.Time(d).In(time.UTC), nil
 }
 
 // Implement Scanner
@@ -66,7 +67,7 @@ func (d *Date) Scan(value interface{}) error {
 	}
 	t, ok := value.(time.Time)
 	if ok {
-		*d = Date(t)
+		*d = Date(t.In(time.UTC))
 		return nil
 	}
 	return fmt.Errorf("unable to convert Date")

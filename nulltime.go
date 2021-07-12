@@ -21,7 +21,8 @@ func NewNullTime(h, m, s int) NullTime {
 }
 
 // NullTimeFromTime constructs a new NullTime object from the provided time.Time value, throwing away all time and timezone information.
-func NullTimeFromTime(t time.Time) NullTime {
+func NullTimeFromTime(tNoLoc time.Time) NullTime {
+	t := tNoLoc.In(time.UTC)
 	return NewNullTime(t.Hour(), t.Minute(), t.Second())
 }
 
@@ -36,7 +37,7 @@ func (t *NullTime) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	ti, err := time.Parse(timeFormat, st)
+	ti, err := time.ParseInLocation(timeFormat, st, time.UTC)
 	*t = NullTime{
 		Time:  Time(ti),
 		Valid: true,
@@ -49,7 +50,7 @@ func (t *NullTime) UnmarshalJSON(b []byte) error {
 func (t NullTime) MarshalJSON() ([]byte, error) {
 	var ds string
 	if t.Valid {
-		ti := time.Time(t.Time)
+		ti := time.Time(t.Time).In(time.UTC)
 		ds = "\"" + ti.Format(timeFormat) + "\""
 	} else {
 		ds = "null"
@@ -72,7 +73,7 @@ func (t NullTime) String() string {
 // Value implements the database/sql Valuer interface.
 func (t NullTime) Value() (driver.Value, error) {
 	if t.Valid {
-		return time.Time(t.Time), nil
+		return time.Time(t.Time).In(time.UTC), nil
 	}
 	return nil, nil
 }
@@ -87,7 +88,7 @@ func (t *NullTime) Scan(value interface{}) error {
 	}
 	ti, ok := value.(time.Time)
 	if ok {
-		t.Time = Time(ti)
+		t.Time = Time(ti.In(time.UTC))
 		t.Valid = true
 		return nil
 	}
